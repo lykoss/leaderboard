@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Werewolf leaderboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}" />
+        <script src="{{ url_for('static', filename='index.js') }}"></script>
+    </head>
+    <body>
+        <div id="header">
+            <span class="header-text">{{ board.info.channel }} leaderboards</span>
+            <p>
+				Last generated at {{ format_date(board.info.generated) }}.
+				Tracking {{ board.info.total_games }} total games.
+				Showing players with at least {{ board.info.min_games }} games.
+				Auto refresh: <select id="refresh-interval"><option value="0">Disabled</option><option value="1">1 minute</option><option value="5">5 minutes</option><option value="10" selected>10 minutes</option><option value="30">30 minutes</option></select>
+			</p>
+        </div>
+        <div id="boards">
+            {% for board_key in sorted(board.leaderboards.keys()) %}
+            {% with current_board = board.leaderboards[board_key] %}
+            <div class="board">
+                <span class="header-text">{{ current_board.display_header[0].upper() }}{{ current_board.display_header[1:] }}</span>
+                {% for entry in current_board.entries %}
+                <div class="entry{% if entry.tie %} tied{% endif %}" data-player="{{ entry.player }}">
+                    <span class="place">{{ entry.position }}</span>
+                    <span class="player">{{ entry.player }}</span>
+                    <span class="value">
+                        <span class="valueText">{{ with_precision(entry.value, current_board.display_precision) }}</span><span class="valueSuffix">{{ current_board.display_suffix }}</span>
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </body>
+</html>

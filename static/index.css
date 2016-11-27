@@ -1,0 +1,96 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 300;
+    font-size: 110%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#header {
+    margin: 10px;
+    margin-bottom: 0;
+    flex: 0;
+}
+
+#header .header-text {
+    font-size: 200%;
+}
+
+#boards {
+    margin: 10px;
+    height: 100%;
+    flex: 1;
+
+    display: flex;
+    flex-direction: row;
+}
+
+@media(max-width: 720px) {
+    #boards {
+        display: block;
+    }
+}
+
+.board {
+    width: 100%;
+}
+
+@media(min-width: 721px) {
+    .board:not(:first-child) {
+        margin-left: 40px;
+    }
+}
+
+.board .header-text {
+    font-size: 150%;
+    border-bottom: 1px dotted black;
+    margin-bottom: 5px;
+    display: block;
+    width: 100%;
+}
+
+.entry {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    align-items: center;
+}
+
+.entry.hover {
+    background-color: #faa;
+}
+
+.entry.tied .place {
+    background-color: #ff0;
+}
+
+.place {
+    flex: 1;
+    font-weight: bold;
+    text-align: right;
+    margin-right: 8px;
+}
+
+.place:after {
+    content: ". ";
+}
+
+.player {
+    flex: 6;
+}
+
+.value {
+    flex: 4;
+    width: 100%;
+    text-align: right;
+    font-family: monospace;
+}
