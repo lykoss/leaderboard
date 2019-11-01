@@ -18,6 +18,8 @@ required.add_argument("--max-players", type=int, required=True,
                     help="the maximum number of players to display on the leaderboard")
 required.add_argument("--min-games", type=int, required=True,
                     help="the minimum number of games required to appear on the leaderboard")
+required.add_argument("--activity-cutoff", type=int, required=True,
+                    help="the number of days in which a user must have recently played to appear on the leaderboard")
 #parser.add_argument("--json", action="store_true",
 #                    help="output as JSON instead of a human-readable form")
 args = parser.parse_args()
@@ -30,6 +32,7 @@ data = {
         "generated": time.strftime("%FT%TZ", generated),
         "max_players": args.max_players,
         "min_games": args.min_games,
+        "cutoff": args.activity_cutoff
     },
     "leaderboards": {
         "01_win_ratio": {
@@ -113,6 +116,9 @@ with open(args.db_path, "rb") as fd:
 with sqlite3.connect(tmp.name) as conn:
     c = conn.cursor()
     data["info"]["total_games"] = c.execute("SELECT COUNT(*) FROM game").fetchone()[0]
+    min_games = data["info"]["min_games"]
+    max_players = data["info"]["max_players"]
+    cutoff = "-{0} days".format(data["info"]["cutoff"])
 
     c.execute("""SELECT
                    COALESCE(pp.account, pp.hostmask),
@@ -124,10 +130,12 @@ with sqlite3.connect(tmp.name) as conn:
                    ON pp.id = pe.primary_player
                  JOIN game_player gp
                    ON gp.player = pl.id
+                 JOIN game g
+                   ON g.id = gp.game
                  GROUP BY pe.id
-                 HAVING COUNT(*) >= :min_games
+                 HAVING COUNT(*) >= :min_games AND MAX(g.started) >= date('now', :cutoff)
                  ORDER BY winratio DESC
-                 LIMIT :max_players""", {"min_games": data["info"]["min_games"], "max_players": data["info"]["max_players"]})
+                 LIMIT :max_players""", {"min_games": min_games, "max_players": max_players, "cutoff": cutoff})
 
     data["leaderboards"]["01_win_ratio"].update(generate_board(c, suffix="%", floats=True))
 
@@ -141,10 +149,12 @@ with sqlite3.connect(tmp.name) as conn:
                    ON pp.id = pe.primary_player
                  JOIN game_player gp
                    ON gp.player = pl.id
+                 JOIN game g
+                   ON g.id = gp.game
                  GROUP BY pe.id
-                 HAVING cnt >= :min_games
+                 HAVING cnt >= :min_games AND MAX(g.started) >= date('now', :cutoff)
                  ORDER BY cnt DESC
-                 LIMIT :max_players""", {"min_games": data["info"]["min_games"], "max_players": data["info"]["max_players"]})
+                 LIMIT :max_players""", {"min_games": min_games, "max_players": max_players, "cutoff": cutoff})
 
     data["leaderboards"]["02_games"].update(generate_board(c, suffix=" games"))
 
@@ -158,10 +168,12 @@ with sqlite3.connect(tmp.name) as conn:
                    ON pp.id = pe.primary_player
                  JOIN game_player gp
                    ON gp.player = pl.id
+                 JOIN game g
+                   ON g.id = gp.game
                  GROUP BY pe.id
-                 HAVING COUNT(*) > :min_games
+                 HAVING COUNT(*) > :min_games AND MAX(g.started) >= date('now', :cutoff)
                  ORDER BY wins DESC
-                 LIMIT :max_players""", {"min_games": data["info"]["min_games"], "max_players": data["info"]["max_players"]})
+                 LIMIT :max_players""", {"min_games": min_games, "max_players": max_players, "cutoff": cutoff})
 
     data["leaderboards"]["03_wins"].update(generate_board(c, suffix=" wins"))
 
