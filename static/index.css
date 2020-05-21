@@ -94,3 +94,14 @@ body {
     text-align: right;
     font-family: monospace;
 }
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #222;
+        color: #eee;
+    }
+    
+    .entry.hover, .entry.tied .place {
+        color: #222;
+    }
+}
