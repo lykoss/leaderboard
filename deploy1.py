@@ -5,10 +5,12 @@ import logging
 import pprint
 import time
 import os
+import functools
 
 # this script is executed in a github actions container
 
 DEBUG_MODE = int(os.environ["DEBUG"])
+CLEANUP = []
 
 def run():
     gh_owner = os.environ["GITHUB_OWNER"]
@@ -38,6 +40,12 @@ def run():
         "target_url": gh_status_url,
         "description": "Initializing deployment"
     })
+
+    CLEANUP.append(functools.partial(github_api, "POST", gh_deploy_status, {
+        "state": "error",
+        "target_url": gh_status_url,
+        "description": "Aborted due to error in GitHub Actions run"
+    }))
 
     # Updates the repo to the latest master revision
     res = cpanel_api("VersionControl", "update", {
@@ -126,9 +134,11 @@ def run():
                                                                                     res["data"]["timestamps"]["active"],
                                                                                     res["data"]["task_id"])
             })
+            cur_state = "in_progress"
         else:
             print("No new deployment status updates", flush=True)
 
+    CLEANUP.clear()
     return success
 
 def cpanel_api(module, endpoint, body=None, query=None):
@@ -168,5 +178,9 @@ def github_api(method, endpoint, body=None):
     return data
 
 if __name__ == "__main__":
-    if not run():
-        sys.exit(1)
+    try:
+        if not run():
+            sys.exit(1)
+    finally:
+        for callback in CLEANUP:
+            callback()
