@@ -44,9 +44,6 @@ def run():
         "repository_root": cp_repo,
         "branch": "master"
     })
-    if not res["status"]:
-        print(res["errors"], sep="\n", flush=True)
-        raise RuntimeError("API call was unsuccessful, aborting!")
 
     # check if we can execute a deploy
     # if this fails, it's because the repo on the webserver has changes
@@ -58,9 +55,6 @@ def run():
     res = cpanel_api("VersionControlDeployment", "create", {
         "repository_root": cp_repo
     })
-    if not res["status"]:
-        print(res["errors"], sep="\n", flush=True)
-        raise RuntimeError("API call was unsuccessful, aborting!")
     cp_deploy_id = res["data"]["deploy_id"]
 
     # mark deployment as queued
@@ -95,9 +89,7 @@ def run():
         res = cpanel_api("VCDeployStatus", "retrieve", query={
             "deploy_id": cp_deploy_id
         })
-        if not res["status"]:
-            print(res["errors"], sep="\n", flush=True)
-            raise RuntimeError("API call was unsuccessful, aborting!")
+
         if res["data"]["timestamps"].get("succeeded", None):
             res = github_api("POST", gh_deploy_status, {
                 "state": "success",
@@ -151,9 +143,11 @@ def cpanel_api(module, endpoint, body=None, query=None):
     r = requests.request(method, url, headers=headers, params=query, data=body)
     r.raise_for_status()
     data = r.json()
-    if DEBUG_MODE:
+    if DEBUG_MODE or not data["status"]:
         pprint.pprint(data)
         print("", flush=True)
+    if not data["status"]:
+        raise RuntimeError("API call was unsuccessful, aborting!")
     return data
 
 def github_api(method, endpoint, body=None):
@@ -168,7 +162,7 @@ def github_api(method, endpoint, body=None):
     print(method, url, flush=True)
     r = requests.request(method, url, headers=headers, json=body)
     data = r.json()
-    if DEBUG_MODE:
+    if DEBUG_MODE or r.status_code >= 400:
         pprint.pprint(data)
         print("", flush=True)
     r.raise_for_status()
