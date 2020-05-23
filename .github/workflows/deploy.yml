@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run deployment
-        run: python deploy.py
+        run: python deploy1.py
         env:
           DEBUG: 0
           CPANEL_ENV: production
