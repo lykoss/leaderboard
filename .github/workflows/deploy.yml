@@ -1,0 +1,33 @@
+name: Deploy to production
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run deployment
+        run: python deploy.py
+        env:
+          DEBUG: 0
+          CPANEL_ENV: production
+          CPANEL_TOKEN: ${{ secrets.CPANEL_TOKEN }}
+          CPANEL_API_URL: "https://werewolf.chat:2083"
+          CPANEL_API_USER: werewolf
+          CPANEL_REPO_PATTERN: "/home/werewolf/repositories/{repo}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_OWNER: ${{ github.repository_owner }}
+          GITHUB_COMMIT: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
