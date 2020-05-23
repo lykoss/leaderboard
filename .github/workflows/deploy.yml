@@ -20,7 +20,7 @@ jobs:
       - name: Run deployment
         run: python deploy1.py
         env:
-          DEBUG: 0
+          DEBUG: 1
           CPANEL_ENV: production
           CPANEL_TOKEN: ${{ secrets.CPANEL_TOKEN }}
           CPANEL_API_URL: "https://werewolf.chat:2083"

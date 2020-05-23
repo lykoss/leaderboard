@@ -26,6 +26,7 @@ def run():
     res = github_api("POST", gh_deploy, {
         "ref": os.environ["GITHUB_SHA"],
         "task": "deploy",
+        "required_contexts": [],
         "auto_merge": False,
         "environment": os.environ["CPANEL_ENV"]
     })
@@ -162,10 +163,10 @@ def github_api(method, endpoint, body=None):
     url = "https://api.github.com/{}".format(endpoint)
     print(method, url)
     r = requests.request(method, url, headers=headers, json=body)
-    r.raise_for_status()
     data = r.json()
     if DEBUG_MODE:
         pprint.pp(data)
+    r.raise_for_status()
     return data
 
 if __name__ == "__main__":
