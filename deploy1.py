@@ -149,7 +149,7 @@ def cpanel_api(module, endpoint, body=None, query=None):
     r.raise_for_status()
     data = r.json()
     if DEBUG_MODE:
-        pprint.pp(data)
+        pprint.pprint(data)
     return data
 
 def github_api(method, endpoint, body=None):
@@ -165,7 +165,7 @@ def github_api(method, endpoint, body=None):
     r = requests.request(method, url, headers=headers, json=body)
     data = r.json()
     if DEBUG_MODE:
-        pprint.pp(data)
+        pprint.pprint(data)
     r.raise_for_status()
     return data
 
