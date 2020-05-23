@@ -58,7 +58,6 @@ def run():
     cp_deploy_id = res["data"]["deploy_id"]
 
     # mark deployment as queued
-    gh_deploy_status = "{}/{}/statuses".format(gh_deploy, res["id"])
     res = github_api("POST", gh_deploy_status, {
         "state": "queued",
         "target_url": gh_status_url,
