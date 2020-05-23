@@ -1,5 +1,4 @@
 ---
 deployment:
   tasks:
-    - chmod u+x /home/werewolf/repositories/leaderboard/deploy2.sh
-    - /home/werewolf/repositories/leaderboard/deploy2.sh
+    - /bin/bash /home/werewolf/repositories/leaderboard/deploy2.sh
