@@ -45,6 +45,7 @@ def run():
         "branch": "master"
     })
     if not res["status"]:
+        print(res["errors"], sep="\n", flush=True)
         raise RuntimeError("API call was unsuccessful, aborting!")
 
     # check if we can execute a deploy
@@ -58,6 +59,7 @@ def run():
         "repository_root": cp_repo
     })
     if not res["status"]:
+        print(res["errors"], sep="\n", flush=True)
         raise RuntimeError("API call was unsuccessful, aborting!")
     cp_deploy_id = res["data"]["deploy_id"]
 
@@ -94,6 +96,7 @@ def run():
             "deploy_id": cp_deploy_id
         })
         if not res["status"]:
+            print(res["errors"], sep="\n", flush=True)
             raise RuntimeError("API call was unsuccessful, aborting!")
         if res["data"]["timestamps"].get("succeeded", None):
             res = github_api("POST", gh_deploy_status, {
