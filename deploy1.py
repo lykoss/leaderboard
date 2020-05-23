@@ -32,7 +32,7 @@ def run():
     })
 
     gh_deploy_status = "{}/{}/statuses".format(gh_deploy, res["id"])
-    gh_status_url = "https://github.com/{}/actions/{}".format(gh_owner_repo, os.environ["GITHUB_RUN_ID"])
+    gh_status_url = "https://github.com/{}/actions/runs/{}".format(gh_owner_repo, os.environ["GITHUB_RUN_ID"])
     res = github_api("POST", gh_deploy_status, {
         "state": "pending",
         "target_url": gh_status_url,
@@ -41,7 +41,7 @@ def run():
 
     # Updates the repo to the latest master revision
     res = cpanel_api("VersionControl", "update", {
-        "repository_root": repo,
+        "repository_root": cp_repo,
         "branch": "master"
     })
     if not res["status"]:
@@ -55,7 +55,7 @@ def run():
 
     # create a deployment
     res = cpanel_api("VersionControlDeployment", "create", {
-        "repository_root": repo
+        "repository_root": cp_repo
     })
     if not res["status"]:
         raise RuntimeError("API call was unsuccessful, aborting!")
@@ -88,7 +88,7 @@ def run():
                 "description": "No deployment response after 5 minutes, aborting action"
             })
             break
-        print("Sleeping for 5 seconds then checking status")
+        print("Sleeping for 5 seconds then checking status", flush=True)
         time.sleep(5)
         res = cpanel_api("VCDeployStatus", "retrieve", query={
             "deploy_id": cp_deploy_id
@@ -133,7 +133,7 @@ def run():
                                                                                     res["data"]["task_id"])
             })
         else:
-            print("No new deployment status updates")
+            print("No new deployment status updates", flush=True)
 
     return success
 
@@ -144,12 +144,13 @@ def cpanel_api(module, endpoint, body=None, query=None):
 
     url = "{}/execute/{}/{}".format(os.environ["CPANEL_API_URL"], module, endpoint)
     method = "POST" if body else "GET"
-    print(method, url)
+    print(method, url, flush=True)
     r = requests.request(method, url, headers=headers, params=query, data=body)
     r.raise_for_status()
     data = r.json()
     if DEBUG_MODE:
         pprint.pprint(data)
+        print("", flush=True)
     return data
 
 def github_api(method, endpoint, body=None):
@@ -161,11 +162,12 @@ def github_api(method, endpoint, body=None):
     }
 
     url = "https://api.github.com/{}".format(endpoint)
-    print(method, url)
+    print(method, url, flush=True)
     r = requests.request(method, url, headers=headers, json=body)
     data = r.json()
     if DEBUG_MODE:
         pprint.pprint(data)
+        print("", flush=True)
     r.raise_for_status()
     return data
 
