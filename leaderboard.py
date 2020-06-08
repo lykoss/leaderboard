@@ -117,7 +117,7 @@ with sqlite3.connect(tmp.name) as conn:
     c = conn.cursor()
     data["info"]["total_games"] = c.execute("""
         SELECT COUNT(*) FROM game
-        WHERE gamemode NOT IN ('random', 'maelstrom', 'drunkfire', 'rapidfire', 'valentines')
+        WHERE gamemode NOT IN ('random', 'maelstrom', 'drunkfire', 'rapidfire', 'valentines', 'roles', 'roles_mud')
         """).fetchone()[0]
     min_games = data["info"]["min_games"]
     max_players = data["info"]["max_players"]
@@ -135,7 +135,7 @@ with sqlite3.connect(tmp.name) as conn:
                    ON gp.player = pl.id
                  JOIN game g
                    ON g.id = gp.game
-                 WHERE g.gamemode NOT IN ('random', 'maelstrom', 'drunkfire', 'rapidfire', 'valentines')
+                 WHERE g.gamemode NOT IN ('random', 'maelstrom', 'drunkfire', 'rapidfire', 'valentines', 'roles', 'roles_mud')
                  GROUP BY pe.id
                  HAVING COUNT(*) >= :min_games AND MAX(g.started) >= date('now', :cutoff)
                  ORDER BY winratio DESC
@@ -155,7 +155,7 @@ with sqlite3.connect(tmp.name) as conn:
                    ON gp.player = pl.id
                  JOIN game g
                    ON g.id = gp.game
-                 WHERE g.gamemode NOT IN ('random', 'maelstrom', 'drunkfire', 'rapidfire', 'valentines')
+                 WHERE g.gamemode NOT IN ('random', 'maelstrom', 'drunkfire', 'rapidfire', 'valentines', 'roles', 'roles_mud')
                  GROUP BY pe.id
                  HAVING cnt >= :min_games AND MAX(g.started) >= date('now', :cutoff)
                  ORDER BY cnt DESC
@@ -175,7 +175,7 @@ with sqlite3.connect(tmp.name) as conn:
                    ON gp.player = pl.id
                  JOIN game g
                    ON g.id = gp.game
-                 WHERE g.gamemode NOT IN ('random', 'maelstrom', 'drunkfire', 'rapidfire', 'valentines')
+                 WHERE g.gamemode NOT IN ('random', 'maelstrom', 'drunkfire', 'rapidfire', 'valentines', 'roles', 'roles_mud')
                  GROUP BY pe.id
                  HAVING COUNT(*) > :min_games AND MAX(g.started) >= date('now', :cutoff)
                  ORDER BY wins DESC
