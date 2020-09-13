@@ -124,7 +124,7 @@ with sqlite3.connect(tmp.name) as conn:
     cutoff = "-{0} days".format(data["info"]["cutoff"])
 
     c.execute("""SELECT
-                   COALESCE(pp.account, pp.hostmask),
+                   pp.account_display,
                    (CAST(SUM(team_win OR indiv_win) AS FLOAT) / COUNT(*)) * 100 as winratio
                  FROM person pe
                  JOIN player pl
@@ -144,7 +144,7 @@ with sqlite3.connect(tmp.name) as conn:
     data["leaderboards"]["01_win_ratio"].update(generate_board(c, suffix="%", floats=True))
 
     c.execute("""SELECT
-                   COALESCE(pp.account, pp.hostmask),
+                   pp.account_display,
                    COUNT(*) as cnt
                  FROM person pe
                  JOIN player pl
@@ -164,7 +164,7 @@ with sqlite3.connect(tmp.name) as conn:
     data["leaderboards"]["02_games"].update(generate_board(c, suffix=" games"))
 
     c.execute("""SELECT
-                   COALESCE(pp.account, pp.hostmask),
+                   pp.account_display,
                    SUM(gp.team_win OR gp.indiv_win) AS wins
                  FROM person pe
                  JOIN player pl
