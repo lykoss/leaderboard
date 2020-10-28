@@ -72,7 +72,7 @@ fi
 ##########
 # restore backup if app didn't run successfully
 ##########
-if [ SUCCESS -eq 1 ]; then
+if [ $SUCCESS -eq 1 ]; then
     echo "Webapp failed, restoring backup. Below is what was found in the log:"
     cat $DESTPATH/stderr.log
     rm -rf $DESTPATH
