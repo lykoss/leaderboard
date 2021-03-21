@@ -98,10 +98,16 @@ body {
 @media (prefers-color-scheme: dark) {
     body {
         background-color: #222;
-        color: #eee;
+        color: #ccc;
     }
     
-    .entry.hover, .entry.tied .place {
+    .entry.tied .place {
         color: #222;
+        background-color: #cc8;
+    }
+    
+    .entry.hover {
+        color: #222;
+        background-color: #c88;
     }
 }
