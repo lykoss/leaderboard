@@ -1,11 +1,11 @@
-import json
-import requests
-import sys
-import logging
-import pprint
-import time
-import os
 import functools
+import logging
+import os
+import pprint
+import sys
+import time
+
+import requests
 
 # this script is executed in a github actions container
 
