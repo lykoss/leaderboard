@@ -1,19 +1,19 @@
 from flask import Flask, render_template
-import requests
+import json
 from datetime import datetime
 
 app = Flask(__name__)
 
 boards = {
-    "default": "https://cadoth.net/werewolf/leaderboard.json",
-    "classic": "https://cadoth.net/werewolf/leaderboard_classic.json"
+    "default": "/home/werewolf/leaderboard.json"
 }
 
 def get_leaderboard(name=None):
     if name not in boards:
         name = "default"
 
-    return boards[name], requests.get(boards[name]).json()
+    with open(boards[name], "t") as f:
+        return boards[name], json.load(f)
 
 @app.context_processor
 def helpers():
