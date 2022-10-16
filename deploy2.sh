@@ -11,7 +11,7 @@
 ##########
 echo "Initializing deployment"
 export VIRTUAL_ENV_DISABLE_PROMPT=1
-source /home/werewolf/virtualenv/leaderboard/3.7/bin/activate
+source /home/werewolf/virtualenv/leaderboard/3.10/bin/activate
 
 SOURCEPATH=/home/werewolf/repositories/leaderboard
 DESTPATH=/home/werewolf/leaderboard
