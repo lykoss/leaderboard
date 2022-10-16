@@ -12,7 +12,7 @@ def get_leaderboard(name=None):
     if name not in boards:
         name = "default"
 
-    with open(boards[name], "t") as f:
+    with open(boards[name], "rt") as f:
         return boards[name], json.load(f)
 
 @app.context_processor
